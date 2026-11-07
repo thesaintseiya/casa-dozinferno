@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LOJAS DOZINFERNO — Roupas para todos os estilos</title>
+  <meta name="description" content="LOJAS DOZINFERNO: camisetas, calças, vestidos, jaquetas, calçados e acessórios." />
+  <link rel="stylesheet" href="style.css" />
+  
+  <link rel="manifest" href="manifest.json">
+
+</head>
+<body>
+
+  <!-- ===================== CABEÇALHO ===================== -->
+  <header class="topo">
+    <div class="container topo__interno">
+      <a class="logo" href="#" aria-label="LOJAS DOZINFERNO - página inicial">LOJAS <span>DOZINFERNO</span></a>
+      <div class="busca">
+        <input type="search" id="input-busca" placeholder="Buscar roupa..." aria-label="Buscar produtos" />
+      </div>
+      <nav class="menu" aria-label="Navegação principal">
+        <button id="btn-pedidos" class="menu__link" type="button">Meus Pedidos</button>
+        <button id="btn-carrinho" class="menu__link menu__carrinho" type="button" aria-label="Abrir carrinho">
+          🛒 Carrinho <span id="badge-carrinho" class="badge" hidden>0</span>
+        </button>
+        <div id="area-auth"></div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>Moda para todos os estilos. Preço que não queima o bolso.</h1>
+        <p>Camisetas, calças, vestidos, jaquetas, calçados e acessórios — tudo em um só lugar.</p>
+      </div>
+    </section>
+
+    <section class="container catalogo">
+      <aside class="filtros" aria-label="Filtros de produtos">
+        <h2>Filtros</h2>
+        <div id="filtro-categorias" class="filtros__grupo" role="group" aria-label="Categorias"></div>
+        <div class="filtros__grupo">
+          <label for="filtro-preco">Preço máximo: <output id="filtro-preco-valor" for="filtro-preco">R$ 1000</output></label>
+          <input type="range" id="filtro-preco" min="10" max="1000" value="1000" step="10" />
+        </div>
+        <div class="filtros__grupo">
+          <label for="filtro-tamanho">Tamanho</label>
+          <select id="filtro-tamanho">
+            <option value="">Todos</option>
+            <option>P</option><option>M</option><option>G</option><option>GG</option>
+            <option>38</option><option>40</option><option>42</option><option>44</option>
+          </select>
+        </div>
+        <button id="btn-limpar-filtros" class="btn btn--fantasma" type="button">Limpar filtros</button>
+      </aside>
+
+      <section class="produtos" aria-label="Lista de produtos">
+        <div class="produtos__cabecalho">
+          <h2>Catálogo</h2>
+          <button id="btn-novo-produto" class="btn btn--primario" type="button" hidden>+ Cadastrar roupa</button>
+        </div>
+        <div id="grade-produtos" class="grade" aria-live="polite"></div>
+        <p id="msg-vazio" class="vazio" hidden>Nenhuma roupa encontrada com esses filtros. 🕳️</p>
+      </section>
+    </section>
+  </main>
+
+  <!-- Carrinho (gaveta lateral) -->
+  <div id="overlay" class="overlay" hidden></div>
+  <aside id="gaveta-carrinho" class="gaveta" aria-label="Carrinho de compras" hidden>
+    <div class="gaveta__cabecalho">
+      <h2>Seu carrinho</h2>
+      <button class="btn-fechar" data-fechar aria-label="Fechar carrinho">✕</button>
+    </div>
+    <div id="itens-carrinho" class="gaveta__itens"></div>
+    <div class="gaveta__rodape">
+      <p>Total: <strong id="total-carrinho">R$ 0,00</strong></p>
+      <button id="btn-finalizar" class="btn btn--primario btn--bloco" type="button">Finalizar pedido</button>
+    </div>
+  </aside>
+
+  <!-- Modal de autenticação -->
+  <div id="modal-auth" class="modal" hidden>
+    <div class="modal__caixa" role="dialog" aria-modal="true" aria-labelledby="titulo-auth">
+      <button class="btn-fechar" data-fechar aria-label="Fechar">✕</button>
+      <h2 id="titulo-auth">Acesse sua conta</h2>
+      <div class="abas" role="tablist">
+        <button id="aba-login" class="aba aba--ativa" type="button">Entrar</button>
+        <button id="aba-cadastro" class="aba" type="button">Cadastrar</button>
+      </div>
+      <form id="form-login" novalidate>
+        <label>E-mail <input type="email" id="login-email" required autocomplete="email" /></label>
+        <label>Senha <input type="password" id="login-senha" required minlength="6" autocomplete="current-password" /></label>
+        <p class="form-erro" id="erro-login" hidden></p>
+        <button class="btn btn--primario btn--bloco" type="submit">Entrar</button>
+      </form>
+      <form id="form-cadastro" hidden novalidate>
+        <label>Nome <input type="text" id="cad-nome" required minlength="2" autocomplete="name" /></label>
+        <label>E-mail <input type="email" id="cad-email" required autocomplete="email" /></label>
+        <label>Senha <input type="password" id="cad-senha" required minlength="6" autocomplete="new-password" /></label>
+        <p class="form-erro" id="erro-cadastro" hidden></p>
+        <button class="btn btn--primario btn--bloco" type="submit">Criar conta</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de cadastro/edição de produto -->
+  <div id="modal-produto" class="modal" hidden>
+    <div class="modal__caixa" role="dialog" aria-modal="true" aria-labelledby="titulo-produto">
+      <button class="btn-fechar" data-fechar aria-label="Fechar">✕</button>
+      <h2 id="titulo-produto">Cadastrar roupa</h2>
+      <form id="form-produto" novalidate>
+        <label>Nome * <input type="text" id="p-nome" required minlength="3" /></label>
+        <label>Descrição <textarea id="p-descricao" rows="3"></textarea></label>
+        <label>Preço (R$) * <input type="number" id="p-preco" required min="0.01" step="0.01" /></label>
+        <label>Categoria * <select id="p-categoria" required></select></label>
+        <label>Cor <input type="text" id="p-cor" /></label>
+        <label>Estoque * <input type="number" id="p-estoque" required min="0" step="1" /></label>
+        <label>URL da imagem <input type="url" id="p-imagem" placeholder="https://..." /></label>
+        <fieldset>
+          <legend>Tamanhos disponíveis *</legend>
+          <div id="p-tamanhos" class="tamanhos"></div>
+        </fieldset>
+        <p class="form-erro" id="erro-produto" hidden></p>
+        <button class="btn btn--primario btn--bloco" type="submit">Salvar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de pedidos -->
+  <div id="modal-pedidos" class="modal" hidden>
+    <div class="modal__caixa modal__caixa--larga" role="dialog" aria-modal="true" aria-labelledby="titulo-pedidos">
+      <button class="btn-fechar" data-fechar aria-label="Fechar">✕</button>
+      <h2 id="titulo-pedidos">Meus pedidos</h2>
+      <div id="lista-pedidos"></div>
+    </div>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="assertive"></div>
+
+  <footer class="rodape">
+    <div class="container">
+      <p>© 2026 LOJAS DOZINFERNO — Todos os direitos reservados. 🔥</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
